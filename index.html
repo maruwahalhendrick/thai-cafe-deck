@@ -604,9 +604,12 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: Video Playback -->
-                    <div class="shot" onclick="openLightbox('assets/shot-01-profil-google.webm')" title="Click to enlarge video">
-                        <video src="assets/shot-01-profil-google.webm" autoplay loop muted playsinline></video>
+                    <!-- Right Column: Video Playback (Optimized 720p H.264 FastStart + WebM + Instant WebP Poster) -->
+                    <div class="shot" onclick="openLightbox('assets/shot-01-profil-google.mp4')" title="Click to enlarge video">
+                        <video poster="assets/shot-01-profil-google.webp" autoplay loop muted playsinline preload="auto">
+                            <source src="assets/shot-01-profil-google.mp4" type="video/mp4">
+                            <source src="assets/shot-01-profil-google.webm" type="video/webm">
+                        </video>
                         <div class="shot-cap"><span class="t-en">▶ Live Audit Video &bull; Thai Cafe Profile</span><span class="t-id">▶ Video Audit &bull; Profil Thai Cafe</span></div>
                     </div>
                 </div>
@@ -696,8 +699,11 @@
                             </button>
                         </div>
 
-                        <div class="shot" id="videoSlotSlide1" onclick="openLightbox(document.getElementById('videoPlayerSlide1').src)" title="Click to enlarge video">
-                            <video id="videoPlayerSlide1" src="assets/shot-02-cafe-di-cisaat.webm" autoplay loop muted playsinline></video>
+                        <div class="shot" id="videoSlotSlide1" onclick="openLightbox(currentSlide1VideoSrc())" title="Click to enlarge video">
+                            <video id="videoPlayerSlide1" poster="assets/shot-02-cafe-di-cisaat.webp" loop muted playsinline preload="none">
+                                <source src="assets/shot-02-cafe-di-cisaat.mp4" type="video/mp4">
+                                <source src="assets/shot-02-cafe-di-cisaat.webm" type="video/webm">
+                            </video>
                             <div class="shot-cap" id="videoCapSlide1"><span class="t-en">▶ Search: cafe di Cisaat &bull; Thai Cafe Not in Top 15</span><span class="t-id">▶ Cari: cafe di Cisaat &bull; Thai Cafe di Luar 15 Besar</span></div>
                         </div>
                     </div>
@@ -768,8 +774,11 @@
                             </div>
                         </div>
 
-                        <div class="shot" onclick="openLightbox('assets/shot-04-ulasan-terakhir.webm')" title="Click to enlarge video">
-                            <video src="assets/shot-04-ulasan-terakhir.webm" autoplay loop muted playsinline></video>
+                        <div class="shot" onclick="openLightbox('assets/shot-04-ulasan-terakhir.mp4')" title="Click to enlarge video">
+                            <video poster="assets/shot-04-ulasan-terakhir.webp" loop muted playsinline preload="none">
+                                <source src="assets/shot-04-ulasan-terakhir.mp4" type="video/mp4">
+                                <source src="assets/shot-04-ulasan-terakhir.webm" type="video/webm">
+                            </video>
                             <div class="shot-cap"><span class="t-en">▶ Review Evidence &bull; 1 Year Unanswered</span><span class="t-id">▶ Bukti Ulasan &bull; 1 Tahun Tanpa Balasan</span></div>
                         </div>
                     </div>
@@ -1027,21 +1036,31 @@
         }
 
         // === VIDEO SWITCHER FOR SLIDE 01 ===
+        let currentSlide1Target = 'cisaat';
+        function currentSlide1VideoSrc() {
+            return currentSlide1Target === 'cisaat' ? 'assets/shot-02-cafe-di-cisaat.mp4' : 'assets/shot-03-cafe-di-sukabumi.mp4';
+        }
+
         function switchVideoSlide1(target) {
+            currentSlide1Target = target;
             const vid = document.getElementById('videoPlayerSlide1');
             const cap = document.getElementById('videoCapSlide1');
             const btnCisaat = document.getElementById('tabBtnCisaat');
             const btnSukabumi = document.getElementById('tabBtnSukabumi');
 
             if (target === 'cisaat') {
-                vid.src = 'assets/shot-02-cafe-di-cisaat.webm';
-                vid.play();
+                vid.poster = 'assets/shot-02-cafe-di-cisaat.webp';
+                vid.innerHTML = '<source src="assets/shot-02-cafe-di-cisaat.mp4" type="video/mp4"><source src="assets/shot-02-cafe-di-cisaat.webm" type="video/webm">';
+                vid.load();
+                vid.play().catch(() => {});
                 cap.innerHTML = '<span class="t-en">▶ Search: cafe di Cisaat &bull; Thai Cafe Not in Top 15</span><span class="t-id">▶ Cari: cafe di Cisaat &bull; Thai Cafe di Luar 15 Besar</span>';
                 btnCisaat.classList.add('active');
                 btnSukabumi.classList.remove('active');
             } else {
-                vid.src = 'assets/shot-03-cafe-di-sukabumi.webm';
-                vid.play();
+                vid.poster = 'assets/shot-03-cafe-di-sukabumi.webp';
+                vid.innerHTML = '<source src="assets/shot-03-cafe-di-sukabumi.mp4" type="video/mp4"><source src="assets/shot-03-cafe-di-sukabumi.webm" type="video/webm">';
+                vid.load();
+                vid.play().catch(() => {});
                 cap.innerHTML = '<span class="t-en">▶ Benchmarks: cafe di Sukabumi &bull; Top 3 Leaders (3.7K Reviews)</span><span class="t-id">▶ Tolok Ukur: cafe di Sukabumi &bull; 3 Besar Pemimpin Pasar (3.7K Ulasan)</span>';
                 btnSukabumi.classList.add('active');
                 btnCisaat.classList.remove('active');
@@ -1138,6 +1157,17 @@
                 this.slides.forEach((slide, idx) => {
                     const isActive = idx === this.currentSlide;
                     slide.classList.toggle('active', isActive);
+                    
+                    // Smart Video Lifecycle: Play only active, pause inactive to save CPU/battery/bandwidth
+                    const v = slide.querySelector('video');
+                    if (v) {
+                        if (isActive) {
+                            v.play().catch(() => {});
+                        } else {
+                            v.pause();
+                        }
+                    }
+
                     if (isActive && this.isMobile()) {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
