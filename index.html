@@ -478,18 +478,20 @@
             position: relative;
             border: 2px solid var(--border-light);
             border-radius: 14px;
-            background: #FFFFFF;
+            background: #0F172A;
             box-shadow: var(--shadow-card);
             overflow: hidden;
             cursor: zoom-in;
             display: flex;
             align-items: center;
             justify-content: center;
+            aspect-ratio: 16 / 9;
+            width: 100%;
         }
-        .shot img { width: 100%; height: 100%; object-fit: contain; display: block; background: #F8FAFC; }
+        .shot img, .shot video { width: 100%; height: 100%; object-fit: contain; display: block; background: #0F172A; }
         .shot .shot-ph { display: none; }
-        .shot.empty { border: 2px dashed var(--thai-primary); background: #FFFBF5; cursor: default; box-shadow: none; }
-        .shot.empty img { display: none; }
+        .shot.empty { border: 2px dashed var(--thai-primary); background: #FFFBF5; cursor: default; box-shadow: none; aspect-ratio: auto; }
+        .shot.empty img, .shot.empty video { display: none; }
         .shot.empty .shot-ph {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             gap: 8px; text-align: center; padding: 20px;
@@ -499,10 +501,12 @@
         .shot-ph span.hint { font-size: 13px; color: var(--text-muted); line-height: 1.5; max-width: 340px; }
         .shot-ph code { font-size: 12px; background: #FFFFFF; border: 1px solid var(--border-accent); border-radius: 6px; padding: 2px 8px; color: var(--text-heading); }
         .shot-cap {
-            position: absolute; left: 10px; bottom: 10px;
-            background: rgba(15, 23, 42, 0.85); color: #FFFFFF;
+            position: absolute; left: 12px; bottom: 12px;
+            background: rgba(15, 23, 42, 0.88); color: #FFFFFF;
             font-family: var(--font-mono); font-size: 12px; font-weight: 700;
-            padding: 4px 10px; border-radius: 20px; pointer-events: none;
+            padding: 5px 12px; border-radius: 20px; pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
         }
         .shot.empty .shot-cap { display: none; }
 
@@ -534,9 +538,12 @@
 </head>
 <body>
 
-    <!-- LIGHTBOX MODAL -->
+    <!-- LIGHTBOX MODAL (Image & Video Support) -->
     <div id="lightboxModal" onclick="closeLightbox()">
-        <img id="lightboxImage" src="" alt="Expanded View" onclick="event.stopPropagation()">
+        <div style="position: relative; max-width: 90vw; max-height: 85vh; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
+            <img id="lightboxImage" src="" alt="Expanded View" style="display:none; max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.2);">
+            <video id="lightboxVideo" src="" autoplay loop muted controls playsinline style="display:none; max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.2); background: #000;"></video>
+        </div>
     </div>
 
     <!-- MAIN PRESENTATION VIEWPORT -->
@@ -549,22 +556,23 @@
                  ======================================================== -->
             <section class="slide active" id="slide-0">
                 <header class="slide-header">
-                    <span><span class="t-en">NEURALKATS // GOOGLE MAPS AUDIT · THAI CAFE</span><span class="t-id">NEURALKATS // AUDIT GOOGLE MAPS · THAI CAFE</span></span>
+                    <span><span class="t-en">NEURALKATS // GOOGLE MAPS AUDIT &bull; THAI CAFE</span><span class="t-id">NEURALKATS // AUDIT GOOGLE MAPS &bull; THAI CAFE</span></span>
                     <span>SLIDE 00 / 05</span>
                 </header>
 
-                <div class="g2" style="flex: 1; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; margin: 15px 0;">
+                <div class="g2" style="flex: 1; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; margin: 15px 0;">
                     <div>
                         <div class="kicker"><span class="t-en">ONE PROBLEM, AND IT IS VISIBLE</span><span class="t-id">MASALAHNYA SATU, DAN KELIHATAN</span></div>
                         <h1 class="title-hero" style="margin-bottom: 16px;">
-                            <span class="t-en">Your food is proven at <span style="color: var(--thai-primary);">4.8★</span>. But only <span style="color: var(--alert-red);">13 people</span> have said so on Google.</span>
-                            <span class="t-id">Rasa Anda sudah terbukti <span style="color: var(--thai-primary);">4.8★</span>. Tapi baru <span style="color: var(--alert-red);">13 orang</span> yang bilang begitu di Google.</span>
+                            <span class="t-en">Your food is proven at <span style="color: var(--thai-primary);">4.8★</span>. But only <span style="color: var(--alert-red);">14 people</span> have said so on Google.</span>
+                            <span class="t-id">Rasa Anda sudah terbukti <span style="color: var(--thai-primary);">4.8★</span>. Tapi baru <span style="color: var(--alert-red);">14 orang</span> yang bilang begitu di Google.</span>
                         </h1>
-                        <p class="text-lead" style="margin-bottom: 26px;">
-                            <span class="t-en">When people around Cibolang &amp; Cisaat search for a place to eat on their phones, they see the numbers below, <strong>not</strong> your Tom Yum.</span><span class="t-id">Saat orang di sekitar Cibolang &amp; Cisaat mencari tempat makan lewat HP, yang mereka lihat adalah angka-angka di bawah ini, <strong>bukan</strong> rasa Tom Yum Anda.</span>
+                        <p class="text-lead" style="margin-bottom: 24px;">
+                            <span class="t-en">When people around Cibolang &amp; Cisaat search for food on their phones, they see the numbers below, <strong>not</strong> your authentic Thai cuisine.</span>
+                            <span class="t-id">Saat orang di sekitar Cibolang &amp; Cisaat mencari makan lewat HP, yang mereka lihat adalah angka-angka di bawah ini, <strong>bukan</strong> kelezatan masakan Thai Anda.</span>
                         </p>
 
-                        <div class="g2" style="gap: 16px; margin-bottom: 26px;">
+                        <div class="g2" style="gap: 16px; margin-bottom: 24px;">
                             <div class="card stat-tile">
                                 <div class="stat-label"><span class="t-en">Rating</span><span class="t-id">Rating</span></div>
                                 <div class="stat-value" style="color: var(--success-green);">4.8★</div>
@@ -572,39 +580,39 @@
                             </div>
                             <div class="card stat-tile accent-red">
                                 <div class="stat-label"><span class="t-en">Number of reviews</span><span class="t-id">Jumlah ulasan</span></div>
-                                <div class="stat-value" style="color: var(--alert-red);">13</div>
-                                <div class="stat-note"><span class="t-en">Lifetime, on Google Maps</span><span class="t-id">Seumur hidup di Google Maps</span></div>
+                                <div class="stat-value" style="color: var(--alert-red);">14</div>
+                                <div class="stat-note"><span class="t-en">Lifetime on Google Maps</span><span class="t-id">Seumur hidup di Google Maps</span></div>
                             </div>
                             <div class="card stat-tile accent-red">
-                                <div class="stat-label"><span class="t-en">Latest review</span><span class="t-id">Ulasan terakhir</span></div>
-                                <div class="stat-value" style="font-size: 38px;"><span class="fill">[DATE]</span></div>
-                                <div class="stat-note"><span class="t-en">Looks inactive to new guests</span><span class="t-id">Terlihat &quot;sepi&quot; oleh calon tamu</span></div>
+                                <div class="stat-label"><span class="t-en">Unaddressed Low Review</span><span class="t-id">Ulasan Buruk Tanpa Balas</span></div>
+                                <div class="stat-value" style="font-size: 34px; color: var(--alert-red);">1 Year Ago</div>
+                                <div class="stat-note"><span class="t-en">Hurts ranking conversion</span><span class="t-id">Merusak konversi &amp; ranking</span></div>
                             </div>
                             <div class="card stat-tile accent-red">
                                 <div class="stat-label"><span class="t-en">Rank for “cafe di Cisaat”</span><span class="t-id">Posisi “cafe di Cisaat”</span></div>
-                                <div class="stat-value" style="font-size: 38px;">#<span class="fill">[X]</span></div>
-                                <div class="stat-note"><span class="t-en">Where Thai Cafe shows up</span><span class="t-id">Di mana Thai Cafe muncul</span></div>
+                                <div class="stat-value" style="font-size: 34px; color: var(--alert-red);">&gt; #15</div>
+                                <div class="stat-note"><span class="t-en">Not in Top 15 search results</span><span class="t-id">Di luar 15 besar pencarian</span></div>
                             </div>
                         </div>
 
-                        <div class="card" style="padding: 14px 22px; display: inline-flex; align-items: center; gap: 16px; border-color: var(--border-accent); background: #FFFFFF;">
-                            <img src="assets/abel_hendrik.jpg" alt="Abel Hendrik" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--thai-primary);">
+                        <div class="card" style="padding: 12px 20px; display: inline-flex; align-items: center; gap: 14px; border-color: var(--border-accent); background: #FFFFFF;">
+                            <img src="assets/abel_hendrik.jpg" alt="Abel Hendrik" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--thai-primary);">
                             <div>
-                                <div style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--thai-primary); font-weight: 700;"><span class="t-en">Prepared for the owner of Thai Cafe</span><span class="t-id">Disiapkan untuk pemilik Thai Cafe</span></div>
-                                <div style="font-size: 17px; font-weight: 800; color: var(--text-heading);">Abel Hendrik &bull; NeuralKats, Sukabumi</div>
+                                <div style="font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; color: var(--thai-primary); font-weight: 700;"><span class="t-en">Prepared for the owner of Thai Cafe</span><span class="t-id">Disiapkan untuk pemilik Thai Cafe</span></div>
+                                <div style="font-size: 16px; font-weight: 800; color: var(--text-heading);">Abel Hendrik &bull; NeuralKats, Sukabumi</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="shot" style="height: 700px;" onclick="if(!this.classList.contains('empty')) openLightbox(this.querySelector('img').src)">
-                            <img src="assets/shot-01-profil-google.png" alt="Thai Cafe Google Maps profile" onerror="this.parentNode.classList.add('empty')">
-                            <div class="shot-ph"><b>📷 <span class="t-en">Thai Cafe Google Maps profile</span><span class="t-id">Profil Google Maps Thai Cafe</span></b><span class="hint"><span class="t-en">Screenshot of the Thai Cafe profile: rating, review count and latest reviews in one screen.</span><span class="t-id">Screenshot profil Thai Cafe: rating, jumlah ulasan, dan ulasan terbaru dalam satu layar.</span></span><code>assets/shot-01-profil-google.png</code></div>
-                            <div class="shot-cap"><span class="t-en">Thai Cafe today</span><span class="t-id">Thai Cafe hari ini</span></div>
-                        </div>
+                    <!-- Right Column: Video Playback -->
+                    <div class="shot" onclick="openLightbox('assets/shot-01-profil-google.webm')" title="Click to enlarge video">
+                        <video src="assets/shot-01-profil-google.webm" autoplay loop muted playsinline></video>
+                        <div class="shot-cap"><span class="t-en">▶ Live Audit Video &bull; Thai Cafe Profile</span><span class="t-id">▶ Video Audit &bull; Profil Thai Cafe</span></div>
+                    </div>
                 </div>
 
                 <footer class="slide-footer">
-                    <span><span class="t-en">SOURCE: GOOGLE MAPS SCREENSHOTS, ACCESSED <span class="fill">[FILL DATE]</span></span><span class="t-id">SUMBER: TANGKAPAN LAYAR GOOGLE MAPS, DIAKSES <span class="fill">[ISI TANGGAL]</span></span></span>
+                    <span><span class="t-en">SOURCE: GOOGLE MAPS AUDIT &bull; OCTOBER 2026</span><span class="t-id">SUMBER: AUDIT GOOGLE MAPS &bull; OKTOBER 2026</span></span>
                     <span><span class="t-en">PRESS → TO CONTINUE</span><span class="t-id">TEKAN → UNTUK LANJUT</span></span>
                 </footer>
             </section>
@@ -618,48 +626,85 @@
                     <span>SLIDE 01 / 05</span>
                 </header>
 
-                <div class="g2" style="flex: 1; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; margin: 15px 0;">
+                <div class="g2" style="flex: 1; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center; margin: 15px 0;">
                     <div>
                         <div class="kicker"><span class="t-en">TRY IT YOURSELF, RIGHT NOW</span><span class="t-id">COBA SENDIRI SEKARANG</span></div>
-                        <h2 class="title-slide" style="margin-bottom: 14px;">
+                        <h2 class="title-slide" style="margin-bottom: 12px;">
                             <span class="t-en">Search “cafe di Cisaat”.<br><span style="color: var(--thai-primary);">Where does Thai Cafe rank?</span></span>
                             <span class="t-id">Cari “cafe di Cisaat”.<br><span style="color: var(--thai-primary);">Thai Cafe ada di urutan berapa?</span></span>
                         </h2>
-                        <p class="text-lead" style="margin-bottom: 22px;">
-                            <span class="t-en">On a phone screen, what separates one cafe from another is <strong>the amount of proof on Google</strong>: stars, number of reviews, and how recent they are.</span><span class="t-id">Di layar HP, yang membedakan satu kafe dengan kafe lain adalah <strong>jumlah bukti di Google</strong>: bintang, ulasan, dan seberapa baru ulasannya.</span>
+                        <p class="text-lead" style="margin-bottom: 20px;">
+                            <span class="t-en">On Google Maps, what wins diners is <strong>social proof velocity</strong>: rating, total review count, and active profile engagement.</span>
+                            <span class="t-id">Di Google Maps, yang memenangkan hati calon tamu adalah <strong>akumulasi bukti sosial</strong>: rating, total ulasan, dan keaktifan profil.</span>
                         </p>
 
+                        <!-- Real Competitor Comparison Table -->
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px;">
-                            <div class="cmp-row head"><span><span class="t-en">Cafe</span><span class="t-id">Kafe</span></span><span><span class="t-en">Rank</span><span class="t-id">Urutan</span></span><span><span class="t-en">Stars</span><span class="t-id">Bintang</span></span><span><span class="t-en">Reviews</span><span class="t-id">Ulasan</span></span><span><span class="t-en">Latest review</span><span class="t-id">Ulasan terakhir</span></span></div>
-                            <div class="cmp-row comp"><span><span class="fill">[Cafe name #1]</span></span><span><span class="fill">[#]</span></span><span><span class="fill">[★]</span></span><span><span class="fill">[n]</span></span><span><span class="fill">[date]</span></span></div>
-                            <div class="cmp-row comp"><span><span class="fill">[Cafe name #2]</span></span><span><span class="fill">[#]</span></span><span><span class="fill">[★]</span></span><span><span class="fill">[n]</span></span><span><span class="fill">[date]</span></span></div>
-                            <div class="cmp-row comp"><span><span class="fill">[Cafe name #3]</span></span><span><span class="fill">[#]</span></span><span><span class="fill">[★]</span></span><span><span class="fill">[n]</span></span><span><span class="fill">[date]</span></span></div>
-                            <div class="cmp-row us"><span>Thai Cafe</span><span><span class="fill">[#]</span></span><span>4.8★</span><span>13</span><span><span class="fill">[date]</span></span></div>
+                            <div class="cmp-row head">
+                                <span><span class="t-en">Cafe</span><span class="t-id">Kafe</span></span>
+                                <span><span class="t-en">Rank</span><span class="t-id">Urutan</span></span>
+                                <span><span class="t-en">Stars</span><span class="t-id">Bintang</span></span>
+                                <span><span class="t-en">Reviews</span><span class="t-id">Ulasan</span></span>
+                                <span><span class="t-en">Status</span><span class="t-id">Status</span></span>
+                            </div>
+                            <div class="cmp-row comp">
+                                <span>Kabumi Garden</span>
+                                <span>#1</span>
+                                <span>4.6★</span>
+                                <span>264</span>
+                                <span style="color: var(--success-green); font-weight: 700;"><span class="t-en">Top 3 Active</span><span class="t-id">Aktif 3 Besar</span></span>
+                            </div>
+                            <div class="cmp-row comp">
+                                <span>Coffee.Sejiwa</span>
+                                <span>#2</span>
+                                <span>4.4★</span>
+                                <span>195</span>
+                                <span style="color: var(--success-green); font-weight: 700;"><span class="t-en">Top 3 Active</span><span class="t-id">Aktif 3 Besar</span></span>
+                            </div>
+                            <div class="cmp-row comp">
+                                <span>KANASPACEID</span>
+                                <span>#3</span>
+                                <span>4.5★</span>
+                                <span>365</span>
+                                <span style="color: var(--success-green); font-weight: 700;"><span class="t-en">Top 3 Active</span><span class="t-id">Aktif 3 Besar</span></span>
+                            </div>
+                            <div class="cmp-row us">
+                                <span>Thai Cafe</span>
+                                <span style="color: var(--alert-red); font-weight: 800;">&gt; #15</span>
+                                <span>4.8★</span>
+                                <span>14</span>
+                                <span style="color: var(--alert-red);"><span class="t-en">Not in Top 15</span><span class="t-id">Di Luar 15 Besar</span></span>
+                            </div>
                         </div>
 
-                        <div class="card accent-thai" style="padding: 16px 22px;">
-                            <div style="font-size: 17px; line-height: 1.55; color: var(--text-heading);">
-                                <span class="t-en"><strong>Widening to “cafe di Sukabumi”:</strong> Thai Cafe ranks <span class="fill">[X]</span> out of <span class="fill">[N]</span> cafes shown.</span><span class="t-id"><strong>Diperluas ke “cafe di Sukabumi”:</strong> Thai Cafe di urutan <span class="fill">[X]</span> dari <span class="fill">[N]</span> kafe yang tampil.</span>
+                        <div class="card accent-thai" style="padding: 14px 20px;">
+                            <div style="font-size: 15.5px; line-height: 1.55; color: var(--text-heading);">
+                                <span class="t-en"><strong>Widening to “cafe di Sukabumi”:</strong> Market leaders like <strong>Kopi Nako</strong> have <strong>3,762 reviews (4.9★)</strong> &amp; <strong>Yume Coffee</strong> has <strong>430 reviews (4.8★)</strong> with complete menus &amp; websites.</span>
+                                <span class="t-id"><strong>Diperluas ke “cafe di Sukabumi”:</strong> Pemimpin pasar seperti <strong>Kopi Nako</strong> punya <strong>3.762 ulasan (4.9★)</strong> &amp; <strong>Yume Coffee</strong> punya <strong>430 ulasan (4.8★)</strong> dengan menu lengkap &amp; website.</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="g2" style="gap: 16px;">
-                        <div class="shot" style="height: 700px;" onclick="if(!this.classList.contains('empty')) openLightbox(this.querySelector('img').src)">
-                            <img src="assets/shot-02-cafe-di-cisaat.png" alt="Results for “cafe di Cisaat”" onerror="this.parentNode.classList.add('empty')">
-                            <div class="shot-ph"><b>📷 <span class="t-en">Results for “cafe di Cisaat”</span><span class="t-id">Hasil “cafe di Cisaat”</span></b><span class="hint"><span class="t-en">Search results screenshot: top 3 plus the Thai Cafe position.</span><span class="t-id">Screenshot hasil pencarian, tampilkan 3 teratas + posisi Thai Cafe.</span></span><code>assets/shot-02-cafe-di-cisaat.png</code></div>
-                            <div class="shot-cap"><span class="t-en">Search: cafe di Cisaat</span><span class="t-id">Cari: cafe di Cisaat</span></div>
+                    <!-- Right Column: Interactive Video Switcher -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                        <div style="display: flex; gap: 10px;">
+                            <button id="tabBtnCisaat" class="diag-tab-btn active" style="flex: 1; padding: 10px 14px; font-size: 13px; font-weight: 700; font-family: var(--font-mono); border-radius: 10px; cursor: pointer;" onclick="switchVideoSlide1('cisaat')">
+                                📍 <span class="t-en">Cisaat Search (&gt;#15)</span><span class="t-id">Pencarian Cisaat (&gt;#15)</span>
+                            </button>
+                            <button id="tabBtnSukabumi" class="diag-tab-btn" style="flex: 1; padding: 10px 14px; font-size: 13px; font-weight: 700; font-family: var(--font-mono); border-radius: 10px; cursor: pointer;" onclick="switchVideoSlide1('sukabumi')">
+                                🏙️ <span class="t-en">Sukabumi Benchmarks</span><span class="t-id">Tolok Ukur Sukabumi</span>
+                            </button>
                         </div>
-                        <div class="shot" style="height: 700px;" onclick="if(!this.classList.contains('empty')) openLightbox(this.querySelector('img').src)">
-                            <img src="assets/shot-03-cafe-di-sukabumi.png" alt="Results for “cafe di Sukabumi”" onerror="this.parentNode.classList.add('empty')">
-                            <div class="shot-ph"><b>📷 <span class="t-en">Results for “cafe di Sukabumi”</span><span class="t-id">Hasil “cafe di Sukabumi”</span></b><span class="hint"><span class="t-en">Wider-area screenshot showing the Thai Cafe position.</span><span class="t-id">Screenshot area lebih luas, tampilkan posisi Thai Cafe.</span></span><code>assets/shot-03-cafe-di-sukabumi.png</code></div>
-                            <div class="shot-cap"><span class="t-en">Search: cafe di Sukabumi</span><span class="t-id">Cari: cafe di Sukabumi</span></div>
+
+                        <div class="shot" id="videoSlotSlide1" onclick="openLightbox(document.getElementById('videoPlayerSlide1').src)" title="Click to enlarge video">
+                            <video id="videoPlayerSlide1" src="assets/shot-02-cafe-di-cisaat.webm" autoplay loop muted playsinline></video>
+                            <div class="shot-cap" id="videoCapSlide1"><span class="t-en">▶ Search: cafe di Cisaat &bull; Thai Cafe Not in Top 15</span><span class="t-id">▶ Cari: cafe di Cisaat &bull; Thai Cafe di Luar 15 Besar</span></div>
                         </div>
                     </div>
                 </div>
 
                 <footer class="slide-footer">
-                    <span><span class="t-en">SOURCE: GOOGLE MAPS SCREENSHOTS, ACCESSED <span class="fill">[FILL DATE]</span></span><span class="t-id">SUMBER: TANGKAPAN LAYAR GOOGLE MAPS, DIAKSES <span class="fill">[ISI TANGGAL]</span></span></span>
+                    <span><span class="t-en">SOURCE: GOOGLE MAPS AUDIT &bull; OCTOBER 2026</span><span class="t-id">SUMBER: AUDIT GOOGLE MAPS &bull; OKTOBER 2026</span></span>
                     <span><span class="t-en">NOT ABOUT TASTE. ABOUT PROOF.</span><span class="t-id">BUKAN SOAL RASA. SOAL BUKTI.</span></span>
                 </footer>
             </section>
@@ -673,55 +718,65 @@
                     <span>SLIDE 02 / 05</span>
                 </header>
 
-                <div class="g2" style="flex: 1; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; margin: 15px 0;">
+                <div class="g2" style="flex: 1; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center; margin: 15px 0;">
                     <div>
                         <div class="kicker"><span class="t-en">SIMPLE MATH</span><span class="t-id">HITUNGAN SEDERHANA</span></div>
                         <h2 class="title-slide" style="margin-bottom: 14px;">
-                            <span class="t-en">Every day the reviews don&#39;t grow,<br><span style="color: var(--thai-primary);">some guests pick another cafe.</span></span>
-                            <span class="t-id">Setiap hari ulasan tidak bertambah,<br><span style="color: var(--thai-primary);">ada tamu yang memilih kafe lain.</span></span>
+                            <span class="t-en">Every day reviews don&#39;t grow,<br><span style="color: var(--thai-primary);">guests pick another cafe.</span></span>
+                            <span class="t-id">Setiap hari ulasan tidak bertambah,<br><span style="color: var(--thai-primary);">tamu memilih kafe lain.</span></span>
                         </h2>
-                        <p class="text-lead" style="margin-bottom: 22px;">
-                            <span class="t-en">They are not judging your food, because they have never tasted it. They choose whoever has the most proof.</span><span class="t-id">Mereka tidak menilai rasa Anda, karena mereka belum pernah mencicipinya. Mereka memilih yang buktinya paling banyak.</span>
+                        <p class="text-lead" style="margin-bottom: 20px;">
+                            <span class="t-en">They are not judging your food, because they have never tasted it. They choose whichever cafe has the most active proof.</span>
+                            <span class="t-id">Mereka tidak menilai rasa Anda, karena belum pernah mencicipinya. Mereka memilih kafe dengan bukti paling meyakinkan.</span>
                         </p>
 
-                        <div class="card accent-red" style="padding: 24px 28px; margin-bottom: 16px; border-width: 2px;">
+                        <div class="card accent-red" style="padding: 22px 26px; margin-bottom: 16px; border-width: 2px;">
                             <div class="stat-label" style="color: var(--alert-red);"><span class="t-en">Example cost of doing nothing, per month</span><span class="t-id">Contoh biaya diam per bulan</span></div>
-                            <div style="font-family: var(--font-mono); font-size: 44px; font-weight: 800; color: var(--alert-red); line-height: 1.1;">
+                            <div style="font-family: var(--font-mono); font-size: 42px; font-weight: 800; color: var(--alert-red); line-height: 1.1;">
                                 <span class="t-en">Rp3,150,000</span><span class="t-id">Rp3.150.000</span>
                             </div>
-                            <div style="font-size: 16px; color: var(--text-body); margin-top: 8px; line-height: 1.5;">
-                                <span class="t-en">3 guests a day choose another cafe &times; Rp35,000 &times; 30 days</span><span class="t-id">3 tamu per hari memilih kafe lain &times; Rp35.000 &times; 30 hari</span>
+                            <div style="font-size: 15px; color: var(--text-body); margin-top: 6px; line-height: 1.5;">
+                                <span class="t-en">3 diners/day choosing another cafe &times; Rp35,000 avg ticket &times; 30 days</span>
+                                <span class="t-id">3 tamu/hari memilih kafe lain &times; rata-rata Rp35.000 &times; 30 hari</span>
                             </div>
                         </div>
 
-                        <div class="card accent-green" style="padding: 20px 28px; margin-bottom: 14px;">
+                        <div class="card accent-green" style="padding: 18px 24px; margin-bottom: 12px;">
                             <div class="stat-label" style="color: var(--success-green);"><span class="t-en">If a review routine runs</span><span class="t-id">Kalau alur ulasan jalan</span></div>
-                            <div style="font-size: 18px; line-height: 1.55; color: var(--text-heading);">
-                                <span class="t-en">50 guests a day &times; 10% who leave a review = <strong>5 reviews a day</strong>, about <strong>150 reviews a month</strong>. Today: 13 reviews in total.</span><span class="t-id">50 tamu per hari &times; 10% mau mengulas = <strong>5 ulasan per hari</strong>, sekitar <strong>150 ulasan per bulan</strong>. Hari ini: 13 ulasan total.</span>
+                            <div style="font-size: 17px; line-height: 1.5; color: var(--text-heading);">
+                                <span class="t-en">50 guests a day &times; 10% who review = <strong>5 reviews/day (~150 reviews/mo)</strong>.<br>Today: <strong>14 reviews lifetime</strong>.</span>
+                                <span class="t-id">50 tamu per hari &times; 10% mengulas = <strong>5 ulasan/hari (~150 ulasan/bln)</strong>.<br>Hari ini: <strong>14 ulasan seumur hidup</strong>.</span>
                             </div>
                         </div>
 
-                        <div style="font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.5;">
-                            <span class="t-en">* Illustrative numbers for simulation, not a promised result. Replace with your own guest count and average ticket.</span><span class="t-id">* Angka contoh untuk simulasi, bukan janji hasil. Ganti dengan jumlah tamu dan transaksi rata-rata kafe Anda.</span>
+                        <div style="font-size: 12.5px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.5;">
+                            <span class="t-en">* Illustrative simulation. Replace with your exact daily guest volume and ticket size.</span>
+                            <span class="t-id">* Simulasi ilustratif. Sesuaikan dengan volume transaksi dan nilai struk kafe Anda.</span>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 18px;">
-                        <div class="shot" style="height: 330px;" onclick="if(!this.classList.contains('empty')) openLightbox(this.querySelector('img').src)">
-                            <img src="assets/shot-04-ulasan-terakhir.png" alt="Latest reviews + their dates" onerror="this.parentNode.classList.add('empty')">
-                            <div class="shot-ph"><b>📷 <span class="t-en">Latest reviews + their dates</span><span class="t-id">Ulasan terbaru + tanggalnya</span></b><span class="hint"><span class="t-en">Screenshot of the review list, newest first. The latest date must be visible.</span><span class="t-id">Screenshot daftar ulasan, urut terbaru. Tanggal terakhir harus terlihat.</span></span><code>assets/shot-04-ulasan-terakhir.png</code></div>
-                            <div class="shot-cap"><span class="t-en">Latest reviews</span><span class="t-id">Ulasan terbaru</span></div>
+                    <!-- Right Column: Video of Unaddressed Negative Review -->
+                    <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+                        <div class="card accent-red" style="padding: 16px 20px; border-width: 1.5px;">
+                            <div style="font-weight: 800; font-size: 16px; color: var(--alert-red); margin-bottom: 4px;">
+                                <span class="t-en">⚠️ 1 Unaddressed Review Stifles Discovery</span>
+                                <span class="t-id">⚠️ 1 Ulasan Negatif Tanpa Balasan Mencekik Algoritma</span>
+                            </div>
+                            <div style="font-size: 14px; color: var(--text-body); line-height: 1.5;">
+                                <span class="t-en">A 2★ review left 1 year ago with zero management reply leaves a bad impression on new potential customers.</span>
+                                <span class="t-id">Ulasan bintang 2 setahun lalu yang dibiarkan tanpa klarifikasi merusak reputasi dan rekomendasi algoritma.</span>
+                            </div>
                         </div>
-                        <div class="shot" style="height: 330px;" onclick="if(!this.classList.contains('empty')) openLightbox(this.querySelector('img').src)">
-                            <img src="assets/shot-05-ulasan-bagus-buruk.png" alt="Example good / bad review" onerror="this.parentNode.classList.add('empty')">
-                            <div class="shot-ph"><b>📷 <span class="t-en">Example good / bad review</span><span class="t-id">Contoh ulasan bagus / buruk</span></b><span class="hint"><span class="t-en">Screenshot of one good review that is buried, or a bad review with no reply (if any).</span><span class="t-id">Screenshot 1 ulasan bagus yang tenggelam, atau ulasan buruk tanpa balasan (jika ada).</span></span><code>assets/shot-05-ulasan-bagus-buruk.png</code></div>
-                            <div class="shot-cap"><span class="t-en">What a new guest reads</span><span class="t-id">Yang dibaca calon tamu</span></div>
+
+                        <div class="shot" onclick="openLightbox('assets/shot-04-ulasan-terakhir.webm')" title="Click to enlarge video">
+                            <video src="assets/shot-04-ulasan-terakhir.webm" autoplay loop muted playsinline></video>
+                            <div class="shot-cap"><span class="t-en">▶ Review Evidence &bull; 1 Year Unanswered</span><span class="t-id">▶ Bukti Ulasan &bull; 1 Tahun Tanpa Balasan</span></div>
                         </div>
                     </div>
                 </div>
 
                 <footer class="slide-footer">
-                    <span><span class="t-en">SOURCE: GOOGLE MAPS SCREENSHOTS, ACCESSED <span class="fill">[FILL DATE]</span></span><span class="t-id">SUMBER: TANGKAPAN LAYAR GOOGLE MAPS, DIAKSES <span class="fill">[ISI TANGGAL]</span></span></span>
+                    <span><span class="t-en">SOURCE: GOOGLE MAPS AUDIT &bull; OCTOBER 2026</span><span class="t-id">SUMBER: AUDIT GOOGLE MAPS &bull; OKTOBER 2026</span></span>
                     <span><span class="t-en">DOING NOTHING IS ALSO A DECISION, AND IT HAS A PRICE</span><span class="t-id">DIAM JUGA KEPUTUSAN, DAN ADA HARGANYA</span></span>
                 </footer>
             </section>
@@ -768,7 +823,7 @@
                             <span class="t-en">Profile fixed &rarr; reviews grow &rarr; higher in search &rarr; guests arrive &amp; order direct</span><span class="t-id">Profil rapi &rarr; ulasan bertambah &rarr; naik di pencarian &rarr; tamu datang &amp; pesan langsung</span>
                         </div>
                         <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--success-green); white-space: nowrap;">
-                            <span class="t-en">LIVE IN <span class="fill">[7]</span> DAYS</span><span class="t-id">AKTIF DALAM <span class="fill">[7]</span> HARI</span>
+                            <span class="t-en">LIVE IN 7 DAYS</span><span class="t-id">AKTIF DALAM 7 HARI</span>
                         </div>
                     </div>
                 </div>
@@ -971,16 +1026,51 @@
             if (wa) wa.href = WA_TEXT[currentLang];
         }
 
-        // === LIGHTBOX LOGIC ===
+        // === VIDEO SWITCHER FOR SLIDE 01 ===
+        function switchVideoSlide1(target) {
+            const vid = document.getElementById('videoPlayerSlide1');
+            const cap = document.getElementById('videoCapSlide1');
+            const btnCisaat = document.getElementById('tabBtnCisaat');
+            const btnSukabumi = document.getElementById('tabBtnSukabumi');
+
+            if (target === 'cisaat') {
+                vid.src = 'assets/shot-02-cafe-di-cisaat.webm';
+                vid.play();
+                cap.innerHTML = '<span class="t-en">▶ Search: cafe di Cisaat &bull; Thai Cafe Not in Top 15</span><span class="t-id">▶ Cari: cafe di Cisaat &bull; Thai Cafe di Luar 15 Besar</span>';
+                btnCisaat.classList.add('active');
+                btnSukabumi.classList.remove('active');
+            } else {
+                vid.src = 'assets/shot-03-cafe-di-sukabumi.webm';
+                vid.play();
+                cap.innerHTML = '<span class="t-en">▶ Benchmarks: cafe di Sukabumi &bull; Top 3 Leaders (3.7K Reviews)</span><span class="t-id">▶ Tolok Ukur: cafe di Sukabumi &bull; 3 Besar Pemimpin Pasar (3.7K Ulasan)</span>';
+                btnSukabumi.classList.add('active');
+                btnCisaat.classList.remove('active');
+            }
+        }
+
+        // === LIGHTBOX LOGIC (Image & Video) ===
         function openLightbox(src) {
             const modal = document.getElementById('lightboxModal');
             const img = document.getElementById('lightboxImage');
-            img.src = src;
+            const vid = document.getElementById('lightboxVideo');
+
+            if (src && (src.endsWith('.webm') || src.endsWith('.mp4'))) {
+                img.style.display = 'none';
+                vid.style.display = 'block';
+                vid.src = src;
+                vid.play();
+            } else {
+                if (vid) { vid.style.display = 'none'; vid.pause(); }
+                img.style.display = 'block';
+                img.src = src;
+            }
             modal.classList.add('open');
         }
 
         function closeLightbox() {
             const modal = document.getElementById('lightboxModal');
+            const vid = document.getElementById('lightboxVideo');
+            if (vid) { vid.pause(); vid.src = ''; }
             modal.classList.remove('open');
         }
 
