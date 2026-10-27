@@ -2,7 +2,7 @@
 <html lang="en" data-lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Google Maps Audit // Thai Cafe Sukabumi</title>
     
     <!-- Google Fonts & Tailwind CDN -->
@@ -98,7 +98,8 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: #0F172A;
+            background: var(--bg-canvas); /* Seamless white matching slide background */
+            touch-action: pan-x pan-y pinch-zoom;
         }
 
         #deckStage {
@@ -106,9 +107,12 @@
             height: 1080px;
             background: var(--bg-canvas);
             position: absolute;
+            top: 50%;
+            left: 50%;
             transform-origin: center center;
             overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: none; /* Seamless full bleed on tablet */
+            transition: transform 0.15s ease-out;
         }
 
         /* SLIDE CONTAINER (DESKTOP) */
@@ -255,6 +259,93 @@
             background: var(--alert-red-soft);
             color: var(--alert-red);
             border: 1px solid var(--alert-red-border);
+        }
+
+        
+        /* SPOTLIGHT & ZOOMABLE CARDS */
+        .zoomable-card {
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+        }
+        .zoomable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+            border-color: var(--thai-primary) !important;
+        }
+        .zoomable-card::after {
+            content: "🔍 TAP TO ENLARGE";
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.82);
+            color: #FFFFFF;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .zoomable-card:hover::after {
+            opacity: 1;
+        }
+
+        /* LIGHTBOX CARD SPOTLIGHT */
+        #lightboxCardContent {
+            display: none;
+            max-width: 92vw;
+            max-height: 88vh;
+            overflow: auto;
+            background: #FFFFFF;
+            border-radius: 18px;
+            padding: 34px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--border-accent);
+            animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        #lightboxCardContent::-webkit-scrollbar { width: 6px; height: 6px; }
+        #lightboxCardContent::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+
+        .zoom-ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 2px 6px;
+            border-radius: 20px;
+        }
+        .zoom-btn {
+            background: transparent;
+            border: none;
+            color: #FFFFFF;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 800;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .zoom-btn:hover { background: rgba(255, 255, 255, 0.25); }
+        .zoom-val {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: #CBD5E1;
+            min-width: 36px;
+            text-align: center;
+            cursor: pointer;
         }
 
         /* NAVIGATION BAR */
@@ -538,11 +629,13 @@
 </head>
 <body>
 
-    <!-- LIGHTBOX MODAL (Image & Video Support) -->
+    <!-- LIGHTBOX MODAL (Image, Video & Card Spotlight) -->
     <div id="lightboxModal" onclick="closeLightbox()">
-        <div style="position: relative; max-width: 90vw; max-height: 85vh; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
+        <div style="position: relative; max-width: 92vw; max-height: 90vh; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
             <img id="lightboxImage" src="" alt="Expanded View" style="display:none; max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.2);">
             <video id="lightboxVideo" src="" autoplay loop muted controls playsinline style="display:none; max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.2); background: #000;"></video>
+            <div id="lightboxCardContent"></div>
+            <button onclick="closeLightbox()" style="position: absolute; top: -14px; right: -14px; width: 34px; height: 34px; border-radius: 50%; background: #0F172A; color: #FFFFFF; border: 2px solid #FFFFFF; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.4); z-index: 10;">✕</button>
         </div>
     </div>
 
@@ -1015,6 +1108,20 @@
         <button class="lang-switch-btn" id="langBtn" onclick="toggleLanguage()">
             🌐 <span id="langLabel">ID / EN</span>
         </button>
+
+        <span style="height: 18px; width: 1px; background: rgba(255, 255, 255, 0.2);"></span>
+
+        <!-- Zoom Controls for Tablet & Screen Recording -->
+        <div class="zoom-ctrl-group" title="Zoom In/Out for Screen Recording">
+            <button class="zoom-btn" onclick="deck.zoomOut()" title="Zoom Out">-</button>
+            <span class="zoom-val" id="zoomPercentLabel" onclick="deck.zoomReset()" title="Click to Reset 100%">100%</span>
+            <button class="zoom-btn" onclick="deck.zoomIn()" title="Zoom In">+</button>
+        </div>
+
+        <!-- Fullscreen Button -->
+        <button class="nav-btn" id="fsBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen" style="padding: 6px 12px; font-size: 13px;">
+            <span id="fsIcon">⛶</span> <span id="fsLabel">FULL</span>
+        </button>
     </nav>
 
 
@@ -1086,12 +1193,61 @@
             modal.classList.add('open');
         }
 
+        function openSpotlight(elementOrId) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImage');
+            const vid = document.getElementById('lightboxVideo');
+            const cardContent = document.getElementById('lightboxCardContent');
+
+            img.style.display = 'none';
+            if (vid) { vid.style.display = 'none'; vid.pause(); }
+
+            let el = (typeof elementOrId === 'string') ? document.getElementById(elementOrId) : elementOrId;
+            if (!el) return;
+
+            // Clone and display inside modal
+            const clone = el.cloneNode(true);
+            clone.style.margin = '0';
+            clone.style.boxShadow = 'none';
+            clone.style.transform = 'none';
+            clone.classList.remove('zoomable-card');
+            
+            // Remove click handler from clone to avoid recursion
+            clone.removeAttribute('onclick');
+
+            cardContent.innerHTML = '';
+            cardContent.appendChild(clone);
+            cardContent.style.display = 'block';
+
+            modal.classList.add('open');
+        }
+
         function closeLightbox() {
             const modal = document.getElementById('lightboxModal');
             const vid = document.getElementById('lightboxVideo');
+            const cardContent = document.getElementById('lightboxCardContent');
             if (vid) { vid.pause(); vid.src = ''; }
+            if (cardContent) { cardContent.innerHTML = ''; cardContent.style.display = 'none'; }
             modal.classList.remove('open');
         }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                document.getElementById('fsIcon').textContent = '✕';
+                document.getElementById('fsLabel').textContent = 'EXIT';
+            } else {
+                document.exitFullscreen().catch(() => {});
+                document.getElementById('fsIcon').textContent = '⛶';
+                document.getElementById('fsLabel').textContent = 'FULL';
+            }
+        }
+        document.addEventListener('fullscreenchange', () => {
+            const isFs = !!document.fullscreenElement;
+            document.getElementById('fsIcon').textContent = isFs ? '✕' : '⛶';
+            document.getElementById('fsLabel').textContent = isFs ? 'EXIT' : 'FULL';
+            if (window.deck) deck.handleResize();
+        });
 
         // Close on Escape key
         document.addEventListener('keydown', (e) => {
@@ -1140,14 +1296,43 @@
             handleResize() {
                 if (this.isMobile()) {
                     document.body.classList.add('is-mobile');
+                    this.stage.style.top = '0';
+                    this.stage.style.left = '0';
                     this.stage.style.transform = 'none';
                 } else {
                     document.body.classList.remove('is-mobile');
-                    const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-                    const x = (window.innerWidth - 1920 * scale) / 2;
-                    const y = (window.innerHeight - 1080 * scale) / 2;
-                    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+                    this.stage.style.top = '50%';
+                    this.stage.style.left = '50%';
+                    const baseScale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const currentZoom = this.userZoom || 1.0;
+                    const finalScale = baseScale * currentZoom;
+                    // Dead-center formula with translate(-50%, -50%): 100% symmetric margins on left/right/top/bottom!
+                    this.stage.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
                 }
+            }
+
+            zoomIn() {
+                this.userZoom = Math.min((this.userZoom || 1.0) + 0.15, 2.5);
+                this.handleResize();
+                this.updateZoomDisplay();
+            }
+
+            zoomOut() {
+                this.userZoom = Math.max((this.userZoom || 1.0) - 0.15, 0.7);
+                this.handleResize();
+                this.updateZoomDisplay();
+            }
+
+            zoomReset() {
+                this.userZoom = 1.0;
+                this.handleResize();
+                this.updateZoomDisplay();
+            }
+
+            updateZoomDisplay() {
+                const z = Math.round((this.userZoom || 1.0) * 100);
+                const el = document.getElementById('zoomPercentLabel');
+                if (el) el.textContent = `${z}%`;
             }
 
             showSlide(index) {
